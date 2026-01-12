@@ -12,3 +12,4 @@ ENV/
 .DS_Store
 .vscode/
 *.log
+news_sources.json

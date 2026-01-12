@@ -2,9 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=2.0, user-scalable=yes">
     <title>Web Search Tool</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Force consistent rendering across different DPI settings */
+        html {
+            zoom: 0.9;
+            -webkit-text-size-adjust: none;
+            -ms-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+        
+        @media screen and (min-width: 1600px) {
+            html {
+                zoom: 1;
+            }
+        }
+        
+        @media screen and (max-width: 1400px) {
+            html {
+                zoom: 0.85;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -47,6 +68,7 @@
             <button class="btn-success" onclick="exportCurrentRows()">Export Rows</button>
             <button class="btn-success" onclick="exportAllSessions()">Export All Sessions</button>
             <button class="btn-info" onclick="importSessions()">Import Sessions</button>
+            <button class="btn-info" onclick="location.href='/manage'">Manage Sources</button>
             <button class="btn-danger open-all-btn" onclick="openAll()">Open All</button>
             <button class="btn-warning" onclick="clearAllRows()">Clear All</button>
         </div>

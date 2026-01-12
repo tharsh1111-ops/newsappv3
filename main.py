@@ -7,12 +7,14 @@ import json
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
+import os
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 DB_FILE = "websearch_sessions.db"
+SOURCES_FILE = "news_sources.json"
 
 # News sources dictionary
 NEWS_SOURCES = {
@@ -142,6 +144,22 @@ NEWS_SOURCES = {
 }
 
 
+# Load/Save sources functions
+def load_sources():
+    if os.path.exists(SOURCES_FILE):
+        try:
+            with open(SOURCES_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return NEWS_SOURCES.copy()
+
+
+def save_sources(sources):
+    with open(SOURCES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(sources, f, indent=2, ensure_ascii=False)
+
+
 # Database initialization
 def init_db():
     conn = sqlite3.connect(DB_FILE)
@@ -174,14 +192,35 @@ class SessionImport(BaseModel):
     overwrite: bool = False
 
 
+class SourceData(BaseModel):
+    region: str
+    name: str
+    url: str
+    oldName: Optional[str] = None
+    newName: Optional[str] = None
+    newUrl: Optional[str] = None
+
+
+class CategoryData(BaseModel):
+    region: Optional[str] = None
+    name: Optional[str] = None
+
+
+# Routes
 @app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/manage")
+async def manage(request: Request):
+    return templates.TemplateResponse("manage.html", {"request": request})
+
+
 @app.get("/api/sources")
 async def get_sources():
-    return JSONResponse(content=NEWS_SOURCES)
+    sources = load_sources()
+    return JSONResponse(content=sources)
 
 
 @app.post("/api/sessions/save")
@@ -307,6 +346,73 @@ async def delete_session(name: str):
         conn.commit()
         conn.close()
         return {"status": "success", "message": f"Session '{name}' deleted"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+# Admin endpoints for managing sources
+@app.post("/api/admin/sources")
+async def add_source(source: SourceData):
+    try:
+        sources = load_sources()
+        if source.region not in sources:
+            sources[source.region] = {}
+        sources[source.region][source.name] = source.url
+        save_sources(sources)
+        return {"status": "success", "message": f"Source '{source.name}' added"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+@app.put("/api/admin/sources")
+async def update_source(source: SourceData):
+    try:
+        sources = load_sources()
+        if source.region in sources and source.oldName in sources[source.region]:
+            del sources[source.region][source.oldName]
+            sources[source.region][source.newName] = source.newUrl
+            save_sources(sources)
+            return {"status": "success", "message": f"Source updated"}
+        return JSONResponse(status_code=404, content={"status": "error", "message": "Source not found"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+@app.delete("/api/admin/sources")
+async def delete_source(source: SourceData):
+    try:
+        sources = load_sources()
+        if source.region in sources and source.name in sources[source.region]:
+            del sources[source.region][source.name]
+            save_sources(sources)
+            return {"status": "success", "message": f"Source '{source.name}' deleted"}
+        return JSONResponse(status_code=404, content={"status": "error", "message": "Source not found"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+@app.post("/api/admin/categories")
+async def add_category(category: CategoryData):
+    try:
+        sources = load_sources()
+        if category.name not in sources:
+            sources[category.name] = {}
+            save_sources(sources)
+            return {"status": "success", "message": f"Category '{category.name}' added"}
+        return JSONResponse(status_code=400, content={"status": "error", "message": "Category already exists"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+@app.delete("/api/admin/categories")
+async def delete_category(category: CategoryData):
+    try:
+        sources = load_sources()
+        if category.region in sources:
+            del sources[category.region]
+            save_sources(sources)
+            return {"status": "success", "message": f"Category '{category.region}' deleted"}
+        return JSONResponse(status_code=404, content={"status": "error", "message": "Category not found"})
     except Exception as e:
         return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
 

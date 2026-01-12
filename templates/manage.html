@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=2.0, user-scalable=yes">
+    <title>Manage News Sources</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .manage-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .manage-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .manage-tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .manage-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-panel {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .source-card {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .source-card h4 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .source-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .region-section {
+            margin-bottom: 30px;
+        }
+        
+        .region-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="manage-container">
+        <a href="/" class="back-link">← Back to Search Tool</a>
+        
+        <header>
+            <h1>Manage News Sources</h1>
+        </header>
+        
+        <div class="manage-tabs">
+            <button class="manage-tab active" onclick="switchManageTab('add')">Add Source</button>
+            <button class="manage-tab" onclick="switchManageTab('view')">View All Sources</button>
+            <button class="manage-tab" onclick="switchManageTab('categories')">Manage Categories</button>
+        </div>
+        
+        <div id="addPanel" class="tab-panel active">
+            <h2>Add New Source</h2>
+            <form id="addSourceForm">
+                <div class="form-group">
+                    <label>Region/Category:</label>
+                    <select id="addRegion" required>
+                        <option value="">-- Select Region --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Or Create New Category:</label>
+                    <input type="text" id="newCategory" placeholder="Enter new category name">
+                </div>
+                <div class="form-group">
+                    <label>Source Name:</label>
+                    <input type="text" id="sourceName" placeholder="e.g., BBC News" required>
+                </div>
+                <div class="form-group">
+                    <label>URL Template (use {query} placeholder):</label>
+                    <input type="text" id="sourceUrl" placeholder="e.g., https://www.example.com/search?q={query}" required>
+                </div>
+                <button type="submit" class="btn-primary">Add Source</button>
+            </form>
+        </div>
+        
+        <div id="viewPanel" class="tab-panel">
+            <h2>All News Sources</h2>
+            <div id="sourcesListContainer"></div>
+        </div>
+        
+        <div id="categoriesPanel" class="tab-panel">
+            <h2>Manage Categories</h2>
+            <div class="form-group">
+                <label>Add New Category:</label>
+                <input type="text" id="newCategoryInput" placeholder="Enter category name">
+                <button onclick="addCategory()" class="btn-primary" style="margin-top: 10px;">Add Category</button>
+            </div>
+            <hr style="margin: 20px 0;">
+            <h3>Existing Categories</h3>
+            <div id="categoriesListContainer"></div>
+        </div>
+    </div>
+    
+    <script src="/static/manage.js"></script>
+</body>
+</html>

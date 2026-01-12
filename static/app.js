@@ -243,11 +243,26 @@ function addRow() {
 }
 
 function addRowWithData(url, keyword) {
-    addRow();
-    const lastIndex = rows.length - 1;
-    const inputs = document.querySelectorAll(`input[data-index="${lastIndex}"]`);
+    // Find first empty row
+    let emptyIndex = -1;
+    for (let i = 0; i < rows.length; i++) {
+        if (!rows[i].url && !rows[i].keyword) {
+            emptyIndex = i;
+            break;
+        }
+    }
+    
+    // If no empty row found, add a new one
+    if (emptyIndex === -1) {
+        addRow();
+        emptyIndex = rows.length - 1;
+    }
+    
+    // Fill the row with data
+    const inputs = document.querySelectorAll(`input[data-index="${emptyIndex}"]`);
     inputs[0].value = url;
     inputs[1].value = keyword;
+    rows[emptyIndex] = { url, keyword };
     rows[lastIndex] = { url, keyword };
 }
 

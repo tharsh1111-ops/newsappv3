@@ -4,18 +4,18 @@
     box-sizing: border-box;
 }
 
+html {
+    font-size: 14px;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 20px;
-}
-
-.container {
-    max-width: 1800px;
+    padding: 15p900px;
     margin: 0 auto;
     background: white;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
@@ -23,7 +23,12 @@ body {
 header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 30px;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2
     text-align: center;
 }
 
@@ -35,8 +40,8 @@ header h1 {
 .top-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px 30px;
+    gap: 15px;
+    padding: 15px 20px;
     background: #f8f9fa;
     border-bottom: 2px solid #e9ecef;
 }
@@ -44,21 +49,22 @@ header h1 {
 .control-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .control-group label {
     font-weight: 600;
     color: #495057;
+    font-size: 13px;
 }
 
 .control-group input[type="text"],
 .control-group input[type="date"],
 .control-group select {
-    padding: 8px 12px;
+    padding: 7px 10px;
     border: 2px solid #dee2e6;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 5px;
+    font-size: 13px;
     transition: border-color 0.3s;
 }
 
@@ -78,13 +84,18 @@ header h1 {
 }
 
 button {
-    padding: 8px 16px;
+    padding: 10px 18px;
     border: none;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    white-space: nowrap;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:hover {
@@ -150,10 +161,11 @@ button:hover {
 .open-all-btn {
     background: red !important;
     color: yellow !important;
-    font-size: 16px !important;
-    padding: 10px 30px !important;
+    font-size: 15px !important;
+    padding: 12px 35px !important;
     font-weight: bold !important;
     animation: pulse 2s infinite;
+    min-height: 44px !important;
 }
 
 @keyframes pulse {
@@ -166,10 +178,11 @@ button:hover {
 }
 
 .main-controls {
-    display: flex;
-    gap: 10px;
+    displa0px;
+    padding: 15px 2
     padding: 20px 30px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .content-area {
@@ -325,8 +338,9 @@ button:hover {
 
 .region-controls {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 8p 1 auto;
+    min-width: 110px;
+    font-size: 12p;
 }
 
 .region-controls button {
