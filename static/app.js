@@ -243,27 +243,36 @@ function addRow() {
 }
 
 function addRowWithData(url, keyword) {
-    // Find first empty row
-    let emptyIndex = -1;
-    for (let i = 0; i < rows.length; i++) {
-        if (!rows[i].url && !rows[i].keyword) {
-            emptyIndex = i;
+    // Find first empty row by checking actual input values - query fresh each time
+    let emptyRowIndex = -1;
+    const rowItems = document.querySelectorAll('.row-item');
+    
+    for (let i = 0; i < rowItems.length; i++) {
+        const rowUrlInput = rowItems[i].querySelector('input[name="url"]');
+        const rowKeywordInput = rowItems[i].querySelector('input[name="keyword"]');
+        const urlVal = rowUrlInput.value.trim();
+        const keywordVal = rowKeywordInput.value.trim();
+        
+        if (!urlVal && !keywordVal) {
+            emptyRowIndex = i;
             break;
         }
     }
     
     // If no empty row found, add a new one
-    if (emptyIndex === -1) {
+    if (emptyRowIndex === -1) {
         addRow();
-        emptyIndex = rows.length - 1;
+        emptyRowIndex = document.querySelectorAll('.row-item').length - 1;
     }
     
-    // Fill the row with data
-    const inputs = document.querySelectorAll(`input[data-index="${emptyIndex}"]`);
-    inputs[0].value = url;
-    inputs[1].value = keyword;
-    rows[emptyIndex] = { url, keyword };
-    rows[lastIndex] = { url, keyword };
+    // Fill the row with data - query fresh to ensure we have current state
+    const allRows = document.querySelectorAll('.row-item');
+    const targetRow = allRows[emptyRowIndex];
+    const urlInputField = targetRow.querySelector('input[name="url"]');
+    const keywordInputField = targetRow.querySelector('input[name="keyword"]');
+    
+    urlInputField.value = url;
+    keywordInputField.value = keyword;
 }
 
 function removeRow(index) {
