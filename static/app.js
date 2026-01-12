@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     refreshSessions();
 });
 
+// Reload sources when page becomes visible (e.g., returning from manage page)
+document.addEventListener('visibilitychange', async () => {
+    if (!document.hidden) {
+        await loadNewsSources();
+    }
+});
+
 // Load news sources from API
 async function loadNewsSources() {
     try {

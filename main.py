@@ -43,7 +43,7 @@ NEWS_SOURCES = {
         "Vox": "https://www.vox.com/search?q={query}",
         "FiveThirtyEight": "https://fivethirtyeight.com/search/?q={query}",
         "ProPublica": "https://www.propublica.org/search?q={query}",
-        "The Hill": "https://thehill.com/search/?q={query}",
+        "The Hill": "https://thehill.com/?s={query}",
         "Axios": "https://www.axios.com/search?q={query}",
         "Newsweek": "https://www.newsweek.com/search/site/{query}",
         "Time": "https://time.com/search/?q={query}",
@@ -51,7 +51,7 @@ NEWS_SOURCES = {
         "The Intercept": "https://theintercept.com/search/?q={query}",
         "Mother Jones": "https://www.motherjones.com/search/?q={query}",
         "The Daily Beast": "https://www.thedailybeast.com/search?q={query}",
-        "Business Insider": "https://www.businessinsider.com/s?q={query}",
+        "Business Insider": "https://www.businessinsider.com/search?q={query}",
         "MarketWatch": "https://www.marketwatch.com/search?q={query}",
         "The Verge": "https://www.theverge.com/search?q={query}",
         "Wired": "https://www.wired.com/search/?q={query}",
@@ -152,7 +152,10 @@ def load_sources():
                 return json.load(f)
         except Exception:
             pass
-    return NEWS_SOURCES.copy()
+    # If no file exists, create it with default sources
+    default_sources = NEWS_SOURCES.copy()
+    save_sources(default_sources)
+    return default_sources
 
 
 def save_sources(sources):
@@ -194,8 +197,8 @@ class SessionImport(BaseModel):
 
 class SourceData(BaseModel):
     region: str
-    name: str
-    url: str
+    name: Optional[str] = None
+    url: Optional[str] = None
     oldName: Optional[str] = None
     newName: Optional[str] = None
     newUrl: Optional[str] = None

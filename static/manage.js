@@ -102,15 +102,33 @@ function displayAllSources() {
             const card = document.createElement('div');
             card.className = 'source-card';
             
-            card.innerHTML = `
-                <h4>${name}</h4>
-                <p style="color: #6c757d; font-size: 13px; word-break: break-all;">${url}</p>
-                <div class="source-card-actions">
-                    <button class="btn-warning" onclick="editSource('${region}', '${name}', '${url.replace(/'/g, "\\'")}')">Edit</button>
-                    <button class="btn-danger" onclick="deleteSource('${region}', '${name}')">Delete</button>
-                </div>
-            `;
+            const h4 = document.createElement('h4');
+            h4.textContent = name;
+            card.appendChild(h4);
             
+            const urlP = document.createElement('p');
+            urlP.style.color = '#6c757d';
+            urlP.style.fontSize = '13px';
+            urlP.style.wordBreak = 'break-all';
+            urlP.textContent = url;
+            card.appendChild(urlP);
+            
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'source-card-actions';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn-warning';
+            editBtn.textContent = 'Edit';
+            editBtn.onclick = () => editSource(region, name, url);
+            actionsDiv.appendChild(editBtn);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-danger';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => deleteSource(region, name);
+            actionsDiv.appendChild(deleteBtn);
+            
+            card.appendChild(actionsDiv);
             section.appendChild(card);
         }
         
@@ -132,13 +150,17 @@ function editSource(region, oldName, oldUrl) {
 // Update source
 async function updateSource(region, oldName, newName, newUrl) {
     try {
+        console.log('Updating:', { region, oldName, newName, newUrl });
         const response = await fetch('/api/admin/sources', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ region, oldName, newName, newUrl })
         });
         
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Result:', result);
+        
         if (result.status === 'success') {
             alert('Source updated successfully!');
             await loadSources();
@@ -147,6 +169,7 @@ async function updateSource(region, oldName, newName, newUrl) {
             alert('Error: ' + result.message);
         }
     } catch (error) {
+        console.error('Update error:', error);
         alert('Error updating source: ' + error);
     }
 }
@@ -158,13 +181,17 @@ async function deleteSource(region, name) {
     }
     
     try {
+        console.log('Deleting:', { region, name });
         const response = await fetch('/api/admin/sources', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ region, name })
         });
         
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Result:', result);
+        
         if (result.status === 'success') {
             alert('Source deleted successfully!');
             await loadSources();
@@ -173,6 +200,7 @@ async function deleteSource(region, name) {
             alert('Error: ' + result.message);
         }
     } catch (error) {
+        console.error('Delete error:', error);
         alert('Error deleting source: ' + error);
     }
 }
@@ -185,12 +213,21 @@ function displayCategories() {
     for (const region of Object.keys(allSources)) {
         const card = document.createElement('div');
         card.className = 'source-card';
-        card.innerHTML = `
-            <h4>${region}</h4>
-            <div class="source-card-actions">
-                <button class="btn-danger" onclick="deleteCategory('${region}')">Delete Category</button>
-            </div>
-        `;
+        
+        const h4 = document.createElement('h4');
+        h4.textContent = region;
+        card.appendChild(h4);
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'source-card-actions';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-danger';
+        deleteBtn.textContent = 'Delete Category';
+        deleteBtn.onclick = () => deleteCategory(region);
+        actionsDiv.appendChild(deleteBtn);
+        
+        card.appendChild(actionsDiv);
         container.appendChild(card);
     }
 }
