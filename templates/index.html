@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Search Tool</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web Search Tool</h1>
+        </header>
+
+        <div class="top-controls">
+            <div class="control-group">
+                <label>Global Keyword:</label>
+                <input type="text" id="globalKeyword" placeholder="Enter keyword">
+            </div>
+
+            <div class="control-group">
+                <label>Date:</label>
+                <input type="date" id="globalDate">
+                <button onclick="setToday()">Today</button>
+                <button onclick="clearDate()">Clear</button>
+            </div>
+
+            <div class="control-group">
+                <label>Session Name:</label>
+                <input type="text" id="sessionName" placeholder="Enter session name">
+                <button onclick="saveSession()">Save Session</button>
+            </div>
+
+            <div class="control-group">
+                <label>Load Session:</label>
+                <select id="sessionsList">
+                    <option value="">-- Select Session --</option>
+                </select>
+                <button onclick="loadSession()">Load</button>
+                <button onclick="refreshSessions()">Refresh</button>
+                <button onclick="deleteSession()">Delete</button>
+            </div>
+        </div>
+
+        <div class="main-controls">
+            <button class="btn-primary" onclick="toggleNewsPanel()">News Sources Panel</button>
+            <button class="btn-success" onclick="exportCurrentRows()">Export Rows</button>
+            <button class="btn-success" onclick="exportAllSessions()">Export All Sessions</button>
+            <button class="btn-info" onclick="importSessions()">Import Sessions</button>
+            <button class="btn-danger open-all-btn" onclick="openAll()">Open All</button>
+            <button class="btn-warning" onclick="clearAllRows()">Clear All</button>
+        </div>
+
+        <div class="content-area">
+            <div class="news-panel" id="newsPanel">
+                <div class="news-panel-header">
+                    <h3>News Sources</h3>
+                    <button class="close-btn" onclick="toggleNewsPanel()">×</button>
+                </div>
+                <div class="tabs" id="newsTabs"></div>
+                <div class="tab-content" id="tabContent"></div>
+            </div>
+
+            <div class="rows-container" id="rowsContainer">
+                <div class="rows-header">
+                    <span style="width: 50%;">URL Template</span>
+                    <span style="width: 40%;">Keyword</span>
+                    <span style="width: 10%;">Action</span>
+                </div>
+                <div id="rowsArea"></div>
+                <button class="btn-secondary" onclick="addRow()">+ Add Row</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="handleImportFile(event)">
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
