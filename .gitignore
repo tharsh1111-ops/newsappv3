@@ -13,3 +13,11 @@ ENV/
 .vscode/
 *.log
 news_sources.json
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+*.exe
+*.dll
+*.pyd
