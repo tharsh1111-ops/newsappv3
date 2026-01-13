@@ -98,7 +98,10 @@ function displayAllSources() {
         heading.textContent = `${region} (${Object.keys(sources).length} sources)`;
         section.appendChild(heading);
         
-        for (const [name, url] of Object.entries(sources)) {
+        const sourceNames = Object.keys(sources);
+        
+        sourceNames.forEach((name, index) => {
+            const url = sources[name];
             const card = document.createElement('div');
             card.className = 'source-card';
             
@@ -116,6 +119,22 @@ function displayAllSources() {
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'source-card-actions';
             
+            // Up button
+            const upBtn = document.createElement('button');
+            upBtn.className = 'btn-info';
+            upBtn.textContent = '↑ Up';
+            upBtn.disabled = index === 0;
+            upBtn.onclick = () => moveSource(region, name, 'up');
+            actionsDiv.appendChild(upBtn);
+            
+            // Down button
+            const downBtn = document.createElement('button');
+            downBtn.className = 'btn-info';
+            downBtn.textContent = '↓ Down';
+            downBtn.disabled = index === sourceNames.length - 1;
+            downBtn.onclick = () => moveSource(region, name, 'down');
+            actionsDiv.appendChild(downBtn);
+            
             const editBtn = document.createElement('button');
             editBtn.className = 'btn-warning';
             editBtn.textContent = 'Edit';
@@ -130,9 +149,59 @@ function displayAllSources() {
             
             card.appendChild(actionsDiv);
             section.appendChild(card);
-        }
+        });
         
         container.appendChild(section);
+    }
+}
+
+// Move source up or down in the list
+async function moveSource(region, sourceName, direction) {
+    const sourceNames = Object.keys(allSources[region]);
+    const currentIndex = sourceNames.indexOf(sourceName);
+    
+    if (currentIndex === -1) return;
+    
+    let newIndex;
+    if (direction === 'up') {
+        if (currentIndex === 0) return;
+        newIndex = currentIndex - 1;
+    } else {
+        if (currentIndex === sourceNames.length - 1) return;
+        newIndex = currentIndex + 1;
+    }
+    
+    // Create new ordered object
+    const newSources = {};
+    const swapName = sourceNames[newIndex];
+    
+    sourceNames.forEach((name, idx) => {
+        if (idx === currentIndex) {
+            newSources[swapName] = allSources[region][swapName];
+        } else if (idx === newIndex) {
+            newSources[sourceName] = allSources[region][sourceName];
+        } else {
+            newSources[name] = allSources[region][name];
+        }
+    });
+    
+    // Update the entire region with new order
+    try {
+        const response = await fetch('/api/admin/sources/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ region, sources: newSources })
+        });
+        
+        const result = await response.json();
+        if (result.status === 'success') {
+            await loadSources();
+            displayAllSources();
+        } else {
+            alert('Error reordering: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error reordering source: ' + error);
     }
 }
 

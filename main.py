@@ -50,7 +50,7 @@ NEWS_SOURCES = {
         "The New Yorker": "https://www.newyorker.com/search/q/{query}",
         "The Intercept": "https://theintercept.com/search/?q={query}",
         "Mother Jones": "https://www.motherjones.com/search/?q={query}",
-        "The Daily Beast": "https://www.thedailybeast.com/search?q={query}",
+        "The Daily Beast": "https://www.thedailybeast.com/search/?query={query}",
         "Business Insider": "https://www.businessinsider.com/search?q={query}",
         "MarketWatch": "https://www.marketwatch.com/search?q={query}",
         "The Verge": "https://www.theverge.com/search?q={query}",
@@ -202,6 +202,7 @@ class SourceData(BaseModel):
     oldName: Optional[str] = None
     newName: Optional[str] = None
     newUrl: Optional[str] = None
+    sources: Optional[dict] = None
 
 
 class CategoryData(BaseModel):
@@ -390,6 +391,19 @@ async def delete_source(source: SourceData):
             save_sources(sources)
             return {"status": "success", "message": f"Source '{source.name}' deleted"}
         return JSONResponse(status_code=404, content={"status": "error", "message": "Source not found"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+
+
+@app.post("/api/admin/sources/reorder")
+async def reorder_sources(source: SourceData):
+    try:
+        sources = load_sources()
+        if source.region in sources and source.sources:
+            sources[source.region] = source.sources
+            save_sources(sources)
+            return {"status": "success", "message": "Sources reordered"}
+        return JSONResponse(status_code=404, content={"status": "error", "message": "Region not found"})
     except Exception as e:
         return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
 

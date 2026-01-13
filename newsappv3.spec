@@ -10,6 +10,7 @@ a = Analysis(
         ('templates', 'templates'),
         ('static', 'static'),
         ('main.py', '.'),
+        ('README.txt', '.'),
     ],
     hiddenimports=[
         'uvicorn.logging',
@@ -48,7 +49,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='NewsAppV3',
+    name='WebSmash',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -67,8 +68,9 @@ coll = COLLECT(
     a.binaries,
     a.zipfiles,
     a.datas,
+    [('README.txt', 'README.txt', 'DATA')],
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='NewsAppV3',
+    name='WebSmash',
 )

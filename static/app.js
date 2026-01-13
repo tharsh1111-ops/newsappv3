@@ -181,6 +181,54 @@ function addSelectedFromRegion(region) {
     }
 }
 
+// Add all selected sources from ALL regions to rows
+function addAllSelectedToRows() {
+    const globalKeyword = document.getElementById('globalKeyword').value.trim();
+    
+    let added = 0;
+    
+    console.log('Starting addAllSelectedToRows...');
+    console.log('Available regions:', Object.keys(newsSources));
+    
+    // Iterate through all regions
+    for (const region of Object.keys(newsSources)) {
+        const regionId = region.replace(/\s+/g, '-');
+        const sourcesList = document.getElementById(`sources-${regionId}`);
+        
+        console.log(`Checking region: ${region} (ID: sources-${regionId})`);
+        
+        if (!sourcesList) {
+            console.log(`  - Sources list not found for region: ${region}`);
+            continue;
+        }
+        
+        const checkboxes = sourcesList.querySelectorAll('input[type="checkbox"]:checked');
+        console.log(`  - Found ${checkboxes.length} checked checkboxes in ${region}`);
+        
+        const regionKeywordInput = document.getElementById(`keyword-${regionId}`);
+        const regionKeyword = regionKeywordInput ? regionKeywordInput.value.trim() : '';
+        const keyword = regionKeyword || globalKeyword;
+        
+        console.log(`  - Using keyword: "${keyword}"`);
+        
+        checkboxes.forEach(cb => {
+            const url = cb.dataset.url;
+            const name = cb.dataset.name;
+            console.log(`    - Adding: ${name} - ${url}`);
+            addRowWithData(url, keyword);
+            added++;
+        });
+    }
+    
+    console.log(`Total added: ${added}`);
+    
+    if (added === 0) {
+        alert('No sources selected across all regions.');
+    } else {
+        alert(`Added ${added} source(s) to rows from all regions.`);
+    }
+}
+
 // Open selected sources from region directly (multi-tab)
 function openSelectedFromRegion(region) {
     const sourcesList = document.getElementById(`sources-${region.replace(/\s+/g, '-')}`);
@@ -329,9 +377,27 @@ function buildQuery(keyword, dateStr) {
     return parts.join(' ').trim();
 }
 
+// Helper function to extract homepage from URL
+function getHomepage(url) {
+    try {
+        const urlObj = new URL(url);
+        return `${urlObj.protocol}//${urlObj.hostname}`;
+    } catch (e) {
+        // If URL parsing fails, try to extract domain manually
+        const match = url.match(/^(https?:\/\/[^\/]+)/);
+        return match ? match[1] : url;
+    }
+}
+
 // Route query to URL
 function routeQuery(query, baseUrl) {
     if (!baseUrl) return '';
+    
+    // If no query provided, just return the homepage
+    if (!query || !query.trim()) {
+        console.log(`No query provided, returning homepage for: ${baseUrl}`);
+        return getHomepage(baseUrl);
+    }
     
     if (baseUrl.includes('{query}')) {
         const posPlaceholder = baseUrl.indexOf('{query}');
@@ -582,3 +648,57 @@ async function handleImportFile(event) {
     
     event.target.value = '';
 }
+
+// Open FACT Check URL
+function openFactCheck() {
+    let factCheckUrl = localStorage.getItem('factCheckUrl');
+    
+    if (factCheckUrl) {
+        window.open(factCheckUrl, '_blank');
+    } else {
+        factCheckUrl = prompt('Enter the FACT Check URL:', 'https://');
+        if (factCheckUrl && factCheckUrl.trim() !== '' && factCheckUrl !== 'https://') {
+            localStorage.setItem('factCheckUrl', factCheckUrl);
+            window.open(factCheckUrl, '_blank');
+            updateFactCheckButton();
+        }
+    }
+}
+
+// Update FACT Check URL
+function updateFactCheckUrl() {
+    const newUrl = prompt('Enter new FACT Check URL:', localStorage.getItem('factCheckUrl') || 'https://');
+    if (newUrl && newUrl.trim() !== '' && newUrl !== 'https://') {
+        localStorage.setItem('factCheckUrl', newUrl);
+        alert('FACT Check URL updated!');
+        updateFactCheckButton();
+    }
+}
+
+// Update button display based on stored URL
+function updateFactCheckButton() {
+    const factCheckUrl = localStorage.getItem('factCheckUrl');
+    const container = document.querySelector('.control-group:has(button[onclick="openFactCheck()"])');
+    
+    if (factCheckUrl && container) {
+        let newUrlLink = container.querySelector('.new-url-link');
+        if (!newUrlLink) {
+            newUrlLink = document.createElement('a');
+            newUrlLink.className = 'new-url-link';
+            newUrlLink.href = 'javascript:void(0)';
+            newUrlLink.textContent = 'NEW URL';
+            newUrlLink.onclick = updateFactCheckUrl;
+            newUrlLink.style.marginLeft = '10px';
+            newUrlLink.style.color = '#667eea';
+            newUrlLink.style.fontWeight = '600';
+            newUrlLink.style.textDecoration = 'none';
+            newUrlLink.style.fontSize = '12px';
+            container.appendChild(newUrlLink);
+        }
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateFactCheckButton();
+});
